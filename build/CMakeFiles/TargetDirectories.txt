@@ -1,3 +1,0 @@
-/home/shailendra/dev/openGL/build/CMakeFiles/openGL.dir
-/home/shailendra/dev/openGL/build/CMakeFiles/edit_cache.dir
-/home/shailendra/dev/openGL/build/CMakeFiles/rebuild_cache.dir

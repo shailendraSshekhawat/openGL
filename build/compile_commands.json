@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/shailendra/dev/openGL/build",
-  "command": "/usr/bin/g++  -I/home/shailendra/dev/openGL/include -g -o CMakeFiles/openGL.dir/src/main.cpp.o -c /home/shailendra/dev/openGL/src/main.cpp",
-  "file": "/home/shailendra/dev/openGL/src/main.cpp",
-  "output": "CMakeFiles/openGL.dir/src/main.cpp.o"
-}
-]
