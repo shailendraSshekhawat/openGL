@@ -138,8 +138,14 @@ int main()
 
     float positions[8] = {
         -0.5f, -0.5f,
-        0.0f, 0.5f,
-        0.5f, -0.5f};
+        0.5f, -0.5f,
+        0.5f, 0.5f,
+        -0.5f, 0.5f};
+
+    // prettier-ignore
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0};
 
     unsigned int buffer, VAO; // this will hold the id(descriptor) of the buffer
     glGenVertexArrays(1, &VAO);
@@ -147,10 +153,15 @@ int main()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void *)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void *)0);
+
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
     ShaderProgramSource source = ParseShader("../res/shaders/Basic.shader");
 
@@ -176,7 +187,7 @@ int main()
         // ------
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
