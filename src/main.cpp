@@ -5,6 +5,33 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <csignal>
+
+#define ASSERT(x) \
+    if (!(x))     \
+        std::raise(SIGTRAP);
+
+#define GLCall(x)   \
+    GLClearError(); \
+    x;              \
+    ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+
+static void GLClearError()
+{
+    // prettier-ignore
+    while (glGetError() != GL_NO_ERROR)
+        ;
+}
+
+static bool GLLogCall(const char *function, const char *file, int line)
+{
+    while (GLenum error = glGetError())
+    {
+        std::cout << "[OpenGL Error] (" << error << "): " << function << " " << file << ":" << line << std::endl;
+        return false;
+    }
+    return true;
+}
 
 struct ShaderProgramSource
 {
@@ -123,6 +150,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSwapInterval(1);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -147,11 +175,12 @@ int main()
         0, 1, 2,
         2, 3, 0};
 
-    unsigned int buffer, VAO; // this will hold the id(descriptor) of the buffer
+    unsigned int VAO; // this will hold the id(descriptor) of the buffer
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &buffer); // generate 1 buffer and store its id in buffer variable
     glBindVertexArray(VAO);
 
+    unsigned int buffer;
+    glGenBuffers(1, &buffer); // generate 1 buffer and store its id in buffer variable
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
@@ -165,18 +194,26 @@ int main()
 
     ShaderProgramSource source = ParseShader("../res/shaders/Basic.shader");
 
-    /*
-    std::cout << "VERTEX" << std::endl;
-    std::cout << source.VertexSource << std::endl;
-    std::cout << "FRAGMENT" << std::endl;
-    std::cout << source.FragmentSource << std::endl;
-    */
-
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
     glUseProgram(shader);
 
+    // uniform code
+
+    int location = glGetUniformLocation(shader, "u_Color");
+    ASSERT(location != -1);
+    glUniform4f(location, 0.2f, 0.3f, 0.4f, 1.0f);
+
+    GLCall(glBindVertexArray(0));
+    GLCall(glUseProgram(0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
     // render loop
     // -----------
+
+    float r = 0.0f;
+    float inc = 0.005f;
+    float increment = inc;
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -186,8 +223,19 @@ int main()
         // render
         // ------
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        GLCall(glUseProgram(shader));
+        glUniform4f(location, r, 0.3f, 0.5f, 1.0f);
+        GLCall(glBindVertexArray(VAO));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        if (r > 1.0f)
+            increment = -inc;
+        else if (r < 0.0f)
+            increment = inc;
+
+        r += increment;
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
