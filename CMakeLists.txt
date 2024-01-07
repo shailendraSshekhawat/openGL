@@ -11,6 +11,12 @@ add_executable(${PROJECT_NAME}
     src/VertexBuffer.cpp
     src/IndexBuffer.h
     src/IndexBuffer.cpp
+    src/VertexArray.h
+    src/VertexBufferLayout.h
+    src/VertexArray.cpp
+    src/Shader.h
+    src/Shader.cpp
+    
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
