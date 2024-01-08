@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "Shader.h"
-#include "renderer.h"
+#include "Renderer.h"
 
 Shader::Shader(const std::string &filepath)
     : m_Filepath(filepath), m_RendererID(0)

@@ -5,11 +5,13 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "renderer.h"
+
+#include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "VertexBufferLayout.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -92,6 +94,8 @@ int main()
         ib.UnBind();
         shader.UnBind();
 
+        Renderer render;
+
         // render loop
         // -----------
 
@@ -106,15 +110,10 @@ int main()
 
             // render
             // ------
-            glClear(GL_COLOR_BUFFER_BIT);
-            // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            render.Clear();
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.3f, 0.5f, 1.0f);
-
-            va.Bind();
-            ib.Bind();
-
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+            render.Draw(va, ib, shader);
 
             if (r > 1.0f)
                 increment = -inc;

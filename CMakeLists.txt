@@ -5,8 +5,8 @@ project(openGL VERSION 0.1.0)
 include_directories(src)
 add_executable(${PROJECT_NAME} 
     src/main.cpp
-    src/renderer.h 
-    src/renderer.cpp 
+    src/Renderer.h 
+    src/Renderer.cpp 
     src/VertexBuffer.h 
     src/VertexBuffer.cpp
     src/IndexBuffer.h
