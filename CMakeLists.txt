@@ -16,6 +16,12 @@ add_executable(${PROJECT_NAME}
     src/VertexArray.cpp
     src/Shader.h
     src/Shader.cpp
+    src/vendor/stb_image/stb_image.cpp
+    src/vendor/stb_image/stb_image.h
+    src/Texture.h
+    src/Texture.cpp
+    
+
     
 )
 

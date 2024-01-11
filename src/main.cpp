@@ -12,6 +12,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "VertexBufferLayout.h"
+#include "Texture.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -60,26 +61,31 @@ int main()
 
     // your code
     {
-        float positions[8] = {
-            -0.5f, -0.5f,
-            0.5f, -0.5f,
-            0.5f, 0.5f,
-            -0.5f, 0.5f};
+        float positions[] = {
+            -0.5f, -0.5f, 0.0f, 0.0f, // 0
+            0.5f, -0.5f, 1.0f, 0.0f,  // 1
+            0.5f, 0.5f, 1.0f, 1.0f,   // 2
+            -0.5f, 0.5f, 0.0f, 1.0f   // 3
+        };
 
         // prettier-ignore
         unsigned int indices[] = {
             0, 1, 2,
             2, 3, 0};
 
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
         // unsigned int VAO; // this will hold the id(descriptor) of the buffer
         // glGenVertexArrays(1, &VAO);
         // glBindVertexArray(VAO);
 
         VertexArray va;
-        VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+        VertexBuffer vb(positions, 4 * 4 * sizeof(float));
         IndexBuffer ib(indices, 6);
 
         VertexBufferLayout layout;
+        layout.AddFloat(2);
         layout.AddFloat(2);
         va.AddBuffer(vb, layout);
 
@@ -87,7 +93,11 @@ int main()
         shader.Bind();
         // uniform code
 
-        shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.4f, 1.0f);
+        // shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.4f, 1.0f);
+
+        Texture texture("../res/textures/smiley.jpg");
+        texture.Bind();
+        shader.SetUniform1i("u_Texture", 0);
 
         va.UnBind();
         vb.UnBind();
@@ -112,7 +122,7 @@ int main()
             // ------
             render.Clear();
             shader.Bind();
-            shader.SetUniform4f("u_Color", r, 0.3f, 0.5f, 1.0f);
+            // shader.SetUniform4f("u_Color", r, 0.3f, 0.5f, 1.0f);
             render.Draw(va, ib, shader);
 
             if (r > 1.0f)
